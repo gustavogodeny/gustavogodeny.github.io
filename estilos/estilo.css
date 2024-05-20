@@ -1,16 +1,16 @@
 p{
-    color: red;
+    color: rgb(0, 0, 0);
 }
 
 h1 {
     margin: 0;
     padding: 20px 0;
-    color: #00539f;
-    text-shadow: 6px 6px 4px black;
+    color: #6b75ff;
+    text-shadow: 3px 3px 3px black;
   }
 
 h2 {
-    color: purple;
+    color: rgb(0, 1, 44);
 }
 
 h3:hover {
@@ -28,12 +28,39 @@ html {
 body {
     width: 80%;
     margin: 0 auto;
-    background-color: #ffd395;
+    background-color: #95ffa3;
     padding: 0 20px 20px 20px;
-    border: 5px solid rgb(102, 58, 0);
+    border: 5px solid #007510;
 }
 
 img {
     display: block;
     margin: 0 auto;
   }
+
+.grid {
+    border: 1px solid #ccc;
+    border-width: 1px 0 0 1px;
+}
+.grid div {
+    border: 1px solid #ccc;
+    border-width: 0 1px 1px 0;
+    float: left;
+}
+
+/*
+html, 
+body,
+.grid {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+.grid {
+    background-image:
+      repeating-linear-gradient(#ccc 0 1px, transparent 1px 100%),
+      repeating-linear-gradient(90deg, #ccc 0 1px, transparent 1px 100%);
+    background-size: 71px 71px;
+}
+*/

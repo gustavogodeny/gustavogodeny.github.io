@@ -1,15 +1,35 @@
 let myImg = document.querySelector("img");
 let myButton = document.querySelector("button");
-let myHeading = document.querySelector("h1");
+let myUser = document.querySelector("userId");
 
 function main(){
+    createGrid(10);
+
     if (!localStorage.getItem("name"))
         setUserName();
     else
-        myHeading.textContent = `Mozilla é legal, ${localStorage.getItem("name")}`;
+        myHeading.textContent = localStorage.getItem("name");
 }
 
-main();
+function createGrid(size) {
+    var ratioW = Math.floor($(window).width()/size),
+        ratioH = Math.floor($(window).height()/size);
+
+    var parent = $('<div />', {
+        class: 'grid',
+        width: ratioW  * size,
+        height: ratioH  * size
+    }).addClass('grid').appendTo('body');
+
+    for (var i = 0; i < ratioH; i++) {
+        for(var p = 0; p < ratioW; p++){
+            $('<div />', {
+                width: size - 1,
+                height: size - 1
+            }).appendTo(parent);
+        }
+    }
+}
 
 myImg.onmouseover = () => {
     const mySrc = myImg.getAttribute("src");
@@ -33,3 +53,5 @@ function setUserName() {
 myButton.onclick = () => {
     setUserName();
 }
+
+main();
