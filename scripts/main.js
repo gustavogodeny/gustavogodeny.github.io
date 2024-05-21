@@ -1,14 +1,18 @@
 let myImg = document.querySelector("img");
 let myButton = document.querySelector("button");
-let myUser = document.querySelector("userId");
+let myUser = document.getElementById("userId");
 
 function main(){
     createGrid(10);
 
-    if (!localStorage.getItem("name"))
-        setUserName();
-    else
-        myHeading.textContent = localStorage.getItem("name");
+    if (!localStorage.getItem("name")){
+        alert("carai");
+        login();
+    }
+    else{
+        alert("porra");
+        myUser.textContent = localStorage.getItem("name");
+    }
 }
 
 function createGrid(size) {
@@ -31,27 +35,31 @@ function createGrid(size) {
     }
 }
 
-myImg.onmouseover = () => {
-    const mySrc = myImg.getAttribute("src");
-    if (mySrc === "imagens/website-drawing-scan.png")
-        myImg.setAttribute("src", "imagens/firefox.png");
-    else  
-        myImg.setAttribute("src", "imagens/website-drawing-scan.png");       
-};
-
-function setUserName() {
+function login() {
     do{
-        var name = prompt("Digite seu nome");
+        var name = prompt("Enter your name");
     } while (name === '');
 
     if (name) {     //Else the user pressed Cancel
         localStorage.setItem("name", name);
-        myHeading.textContent = `Mozilla é legal, ${name}`;
+        myUser.textContent = `logged as ${name}`;
+        myButton.textContent = "Logout";
     }
 }
 
-myButton.onclick = () => {
-    setUserName();
+function logout() {
+    myUser.textContent = "please login.";
+    myButton.textContent = "Login";
+    alert("Logout successfull");
 }
 
-main();
+
+myButton.onclick = () => {
+    if(myButton.textContent === "Login")
+        login();
+    else
+        logout();
+}
+
+//main();
+//createGrid(10);
