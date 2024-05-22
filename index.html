@@ -1,37 +1,423 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-    <head>
-        <link href="estilos/estilo.css" rel="stylesheet" />
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&display=swap" rel="stylesheet">
+  <head>
+    <title>Chess Board</title>
+      <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>
+      <a>Online game, </a>
+      <a id="userId">please login.</a>
+    </h1>
 
-    </head>
-    <body>
-        <h1>
-            <a>Online game, </a>
-            <a id="userId">please login.</a>
-        </h1>
-        <h2>How to play this game:
-            <ul>
-                <li>Instruction 1</li>
-                <li>Instruction 2</li>
-                <li>Instruction 3</li>
-            </ul>
-        </h2>
+    <button>Login</button>
 
-        <canvas id="canvas" width="720" height="720" style="border:3px solid #000000; display: block; margin: 0 auto; border-radius: 80px;"></canvas>
+    <h2>Game Mechanics:</h2>
+    <h3>
+      <ul>
+        <li>Each round, the player with the fewest monsters on the grid gets a turn first.</li>
+        <li>If there is a tie, then it is randomly decided from among those with the least monsters.</li>
+        <li>On a players turn, they may play either a vampire, a werewolf or a ghost anywhere on their edge of the grid. </li>
+        <li>They may not move that monster this turn. They may also move any other monsters that they have. </li>
+        <li>A monster can move any number of squares horizontally or vertically, or up to two squares diagonally. </li>
+        <li>They can move over their own player’s monsters, but cannot move over other player’s monsters.</li>
+    </h3>
 
-        <p>Read the
-            <a href="https://www.pudim.com.br/" target=”_blank”>Documentation</a>
-            so you can fully understand what this game is for
-        </p>
+    <h2>Rules:</h2>
+    <h3>
+      <ul>
+        <li>If there’s a vampire and a werewolf, the werewolf is removed</li>
+        <li>If there’s a werewolf and a ghost, the ghost is removed</li>
+        <li>If there’s a ghost and a vampire, the vampire is removed</li>
+        <li>If there’s two of the same kind of monster, both are removed</li>
+      </ul>
+    </h3>
 
-        <button>Login</button>
+    <div class="chessBoard">
+      <!-- Add the pawn div element -->
+      <div class="square null"></div>
 
-        <script src = "scripts/main.js"></script>
-    </body>
+      <div class="square blackRed">
+        <div class="piece werewolf" color="red" >
+            <img src="images/werewolfRed.png" alt="werewolf" >
+          </div>
+      </div>
 
+      <div class="square whiteRed">
+        <div class="piece werewolf" color="red" >
+            <img src="images/werewolfRed.png" alt="werewolf" >
+          </div>
+      </div>
 
+      <div class="square blackRed">
+        <div class="piece vampire" color="red" >
+            <img src="images/vampireRed.png" alt="vampire" >
+          </div>
+      </div>
 
+      <div class="square whiteRed">
+        <div class="piece vampire" color="red" >
+            <img src="images/vampireRed.png" alt="vampire" >
+        </div>
+      </div>
+
+      <div class="square blackRed">
+        <div class="piece ghost" color="red" >
+            <img src="images/ghostRed.png" alt="ghost" >
+        </div>
+      </div>
+
+      <div class="square whiteRed">
+        <div class="piece ghost" color="red">
+            <img src="images/ghostRed.png" alt="ghost" >
+        </div>
+      </div>
+
+      <div class="square blackRed">
+        <div class="piece vampire" color="red" >
+            <img src="images/vampireRed.png" alt="vampire" >
+        </div>
+      </div>
+
+      <div class="square whiteRed">
+        <div class="piece vampire" color="red">
+            <img src="images/vampireRed.png" alt="vampire" >
+        </div>
+      </div>
+
+      <div class="square blackRed">
+        <div class="piece werewolf" color="red" >
+            <img src="images/werewolfRed.png" alt="werewolf" >
+        </div>
+      </div>
+
+      <div class="square whiteRed">
+        <div class="piece werewolf" color="red" >
+            <img src="images/werewolfRed.png" alt="werewolf" >
+        </div>
+      </div>
+      <div class="square null"></div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square blackBlue">
+        <div class="piece werewolf" color="blue" >
+          <img src="images/werewolfBlue.png" alt="werewolf" >
+        </div>
+      </div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black">
+        <div class="coordinate rank whiteText">10</div>
+      </div>
+      <div class="square whiteYellow">
+        <div class="piece werewolf" color="yellow" >
+          <img src="images/werewolfYellow.png" alt="werewolf" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square whiteBlue">
+        <div class="piece werewolf" color="blue" >
+          <img src="images/werewolfBlue.png" alt="werewolf" >
+        </div>
+      </div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white">
+        <div class="coordinate rank blackText">9</div>
+      </div>
+      <div class="square blackYellow">
+        <div class="piece werewolf" color="yellow" >
+          <img src="images/werewolfYellow.png" alt="werewolf" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square blackBlue">
+        <div class="piece vampire" color="blue" >
+          <img src="images/vampireBlue.png" alt="vampire" >
+        </div>
+      </div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black">
+        <div class="coordinate rank whiteText">8</div>
+      </div>
+      <div class="square whiteYellow">
+        <div class="piece vampire" color="yellow" >
+          <img src="images/vampireYellow.png" alt="vampire" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square whiteBlue">
+        <div class="piece vampire" color="blue" >
+          <img src="images/vampireBlue.png" alt="vampire" >
+        </div>
+      </div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white">
+        <div class="coordinate rank blackText">7</div>
+      </div>
+      <div class="square blackYellow">
+        <div class="piece vampire" color="yellow" >
+          <img src="images/vampireYellow.png" alt="vampire" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square blackBlue">
+        <div class="piece ghost" color="blue" >
+          <img src="images/ghostBlue.png" alt="ghost" >
+        </div>
+      </div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black">
+        <div class="coordinate rank whiteText">6</div>
+      </div>
+      <div class="square whiteYellow">
+        <div class="piece ghost" color="yellow" >
+          <img src="images/ghostYellow.png" alt="ghost" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square whiteBlue">
+        <div class="piece ghost" color="blue" >
+          <img src="images/ghostBlue.png" alt="ghost" >
+        </div>
+      </div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white">
+        <div class="coordinate rank blackText">5</div>
+      </div>
+      <div class="square blackYellow">
+        <div class="piece ghost" color="yellow" >
+          <img src="images/ghostYellow.png" alt="ghost" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square blackBlue">
+        <div class="piece vampire" color="blue" >
+          <img src="images/vampireBlue.png" alt="vampire" >
+        </div>
+      </div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black">
+        <div class="coordinate rank whiteText">4</div>
+      </div>
+      <div class="square whiteYellow">
+        <div class="piece vampire" color="yellow" >
+          <img src="images/vampireYellow.png" alt="vampire" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square whiteBlue">
+        <div class="piece vampire" color="blue" >
+          <img src="images/vampireBlue.png" alt="vampire" >
+        </div>
+      </div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white">
+        <div class="coordinate rank blackText">3</div>
+      </div>
+      <div class="square blackYellow">
+        <div class="piece vampire" color="yellow" >
+          <img src="images/vampireYellow.png" alt="vampire" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square blackBlue">
+        <div class="piece werewolf" color="blue" >
+          <img src="images/werewolfBlue.png" alt="werewolf" >
+        </div>
+      </div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black"></div>
+      <div class="square white"></div>
+      <div class="square black">
+        <div class="coordinate rank whiteText">2</div>
+      </div>
+      <div class="square whiteYellow">
+        <div class="piece werewolf" color="yellow" >
+          <img src="images/werewolfYellow.png" alt="werewolf" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+      <div class="square whiteBlue">
+        <div class="piece werewolf" color="blue" >
+          <img src="images/werewolfBlue.png" alt="werewolf" >
+        </div>
+      </div>
+      <div class="square black">
+        <div class="coordinate whiteText">a</div>
+      </div>
+      <div class="square white">
+        <div class="coordinate blackText">b</div>
+      </div>
+      <div class="square black">
+        <div class="coordinate whiteText">c</div>
+      </div>
+      <div class="square white">
+        <div class="coordinate blackText">d</div>
+      </div>
+      <div class="square black">
+        <div class="coordinate whiteText">e</div>
+      </div>
+      <div class="square white">
+        <div class="coordinate blackText">f</div>
+      </div>
+      <div class="square black">
+        <div class="coordinate whiteText">g</div>
+      </div>
+      <div class="square white">
+        <div class="coordinate blackText">h</div>
+      </div>
+      <div class="square black">
+        <div class="coordinate whiteText">i</div>
+      </div>
+      <div class="square white">
+        <div class="coordinate rank blackText">1</div>
+        <div class="coordinate blackText">j</div>
+      </div>
+      <div class="square blackYellow">
+        <div class="piece werewolf" color="yellow" >
+          <img src="images/werewolfYellow.png" alt="werewolf" >
+        </div>
+      </div>
+    <!-- ------------------------------------------------------------------------- -->
+
+      <div class="square null"></div>
+
+      <div class="square whiteGreen">
+        <div class="piece werewolf" color="white">
+            <img src="images/werewolfGreen.png" alt="werewolf" >
+        </div>
+      </div>
+
+      <div class="square blackGreen">
+        <div class="piece werewolf" color="white">
+          <img src="images/werewolfGreen.png" alt="werewolf" >
+           </div>
+      </div>
+
+      <div class="square whiteGreen">
+        <div class="piece vampire" color="white">
+          <img src="images/vampireGreen.png" alt="vampire" >
+           </div>
+      </div>
+
+      <div class="square blackGreen">
+        <div class="piece vampire" color="white">
+          <img src="images/vampireGreen.png" alt="vampire" >
+        </div>
+      </div>
+
+      <div class="square whiteGreen">
+        <div class="piece ghost" color="white">
+          <img src="images/ghostGreen.png" alt="ghost" >
+           </div>
+      </div>
+
+      <div class="square blackGreen">
+        <div class="piece ghost" color="white">
+          <img src="images/ghostGreen.png" alt="ghost" >
+           </div>
+      </div>
+
+      <div class="square whiteGreen">
+        <div class="piece vampire" color="white">
+          <img src="images/vampireGreen.png" alt="vampire" >
+           </div>
+      </div>
+
+      <div class="square blackGreen">
+        <div class="piece vampire" color="white">
+          <img src="images/vampireGreen.png" alt="vampire" >
+           </div>
+      </div>
+
+      <div class="square whiteGreen">
+        <div class="piece werewolf" color="white">
+          <img src="images/werewolfGreen.png" alt="werewolf" >
+           </div>
+      </div>
+
+      <div class="square blackGreen">
+        <div class="piece werewolf" color="white">
+          <img src="images/werewolfGreen.png" alt="werewolf" >
+           </div>
+      </div>
+    </div>
+     <!-- Add the jQuery library -->
+
+    <p>Read the
+      <a href="https://www.pudim.com.br/" target=”_blank”>Documentation</a>
+      so you can fully understand what this game is for
+    </p>
+
+    <script src="main.js"></script>
+  </body>
 </html>
+
