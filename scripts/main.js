@@ -1,12 +1,13 @@
 let boardSquaresArray = [];
-let isWhiteTurn = true;
-let whiteKingSquare="e1";
-let blackKingSquare="e8";
+let whoseTurn = 0;  // 0: red; 1: yellow; 2: green; 3: blue
+
 const boardSquares = document.getElementsByClassName("square");
 const pieces = document.getElementsByClassName("piece");
 const piecesImages = document.getElementsByTagName("img");
 
-let myButton = document.querySelector("button");
+let btnLogin = document.getElementById("btn-login");
+let btnStart = document.getElementById("btn-start");
+
 let myUser = document.getElementById("userId");
 
 function login() {
@@ -17,21 +18,31 @@ function login() {
   if (name) {     //Else the user pressed Cancel
       localStorage.setItem("name", name);
       myUser.textContent = `logged as ${name}`;
-      myButton.textContent = "Logout";
+      btnLogin.textContent = "Logout";
   }
 }
 
 function logout() {
   myUser.textContent = "please login.";
-  myButton.textContent = "Login";
+  btnLogin.textContent = "Login";
   alert("Logout successfull");
 }
 
-myButton.onclick = () => {
-  if(myButton.textContent === "Login")
+btnLogin.onclick = () => {
+  if(btnLogin.textContent === "Login")
       login();
   else
       logout();
+}
+
+btnStart.onclick = () => {
+    const alert= document.getElementById("alert");
+    alert.innerHTML="Game started";
+    alert.style.display="block";
+  
+    setTimeout(function() {
+         alert.style.display="none";
+    },3000);
 }
 
 function fillBoardSquaresArray() {
@@ -62,26 +73,22 @@ function fillBoardSquaresArray() {
     boardSquaresArray.push(arrayElement);
   }
 }
-function updateBoardSquaresArray(
-  currentSquareId,
-  destinationSquareId,
-  boardSquaresArray
-) {
-  let currentSquare = boardSquaresArray.find(
-    (element) => element.squareId === currentSquareId
-  );
-  let destinationSquareElement = boardSquaresArray.find(
-    (element) => element.squareId === destinationSquareId
-  );
-  let pieceColor = currentSquare.pieceColor;
-  let pieceType = currentSquare.pieceType;
-  let pieceId= currentSquare.pieceId;
-  destinationSquareElement.pieceColor = pieceColor;
-  destinationSquareElement.pieceType = pieceType;
-  destinationSquareElement.pieceId=pieceId;
-  currentSquare.pieceColor = "blank";
-  currentSquare.pieceType = "blank";
-  currentSquare.pieceId = "blank";
+function updateBoardSquaresArray (currentSquareId, destinationSquareId, boardSquaresArray) {
+    let currentSquare = boardSquaresArray.find(
+        (element) => element.squareId === currentSquareId
+    );
+    let destinationSquareElement = boardSquaresArray.find(
+        (element) => element.squareId === destinationSquareId
+    );
+    let pieceColor = currentSquare.pieceColor;
+    let pieceType = currentSquare.pieceType;
+    let pieceId= currentSquare.pieceId;
+    destinationSquareElement.pieceColor = pieceColor;
+    destinationSquareElement.pieceType = pieceType;
+    destinationSquareElement.pieceId = pieceId;
+    currentSquare.pieceColor = "blank";
+    currentSquare.pieceType = "blank";
+    currentSquare.pieceId = "blank";
 }
 
 function deepCopyArray(array) {
@@ -126,8 +133,8 @@ function drag(ev) {
   const pieceId = piece.id;
 
   if (
-    (isWhiteTurn && pieceColor == "white") ||
-    (!isWhiteTurn && pieceColor == "black")
+    (whoseTurn && pieceColor == "white") ||
+    (!whoseTurn && pieceColor == "black")
   ) {
     const startingSquareId = piece.parentNode.id;
     ev.dataTransfer.setData("text", pieceId + "|" + startingSquareId);
@@ -158,15 +165,7 @@ function drop(ev) {
 
   legalSquares=isMoveValidAgainstCheck(legalSquares,startingSquareId,pieceColor,pieceType);
 
-  if (pieceType == "king") {
-    let isCheck = isKingInCheck(
-      destinationSquareId,
-      pieceColor,
-      boardSquaresArray
-    );
-    if (isCheck) return;
-    isWhiteTurn  ? (whiteKingSquare=destinationSquareId) : (blackKingSquare=destinationSquareId);
-  }
+
 
     let squareContent=getPieceAtSquare(destinationSquareId,boardSquaresArray);
   if (
@@ -174,7 +173,7 @@ function drop(ev) {
      legalSquares.includes(destinationSquareId)
   ) {
     destinationSquare.appendChild(piece);
-    isWhiteTurn = !isWhiteTurn;
+    whoseTurn = (whoseTurn + 1) % 4;
     updateBoardSquaresArray(
       startingSquareId,
       destinationSquareId,
@@ -197,7 +196,7 @@ function drop(ev) {
     //   destinationSquare.removeChild(destinationSquare.firstChild);
     // }
     destinationSquare.appendChild(piece);
-    isWhiteTurn = !isWhiteTurn;
+    whoseTurn = (whoseTurn + 1) % 4;
     updateBoardSquaresArray(
       startingSquareId,
       destinationSquareId,
@@ -209,60 +208,14 @@ function drop(ev) {
 }
 
 function getPossibleMoves(startingSquareId, piece, boardSquaresArray) {
-  const pieceColor = piece.pieceColor;
-  const pieceType = piece.pieceType;
 
-  let legalSquares = [];
-  if (pieceType=="pawn") {
-    legalSquares = getPawnMoves(
-      startingSquareId,
-      pieceColor,
-      boardSquaresArray
-    );
-    return legalSquares;
-  }
-  if  (pieceType=="knight") {
-    legalSquares = getKnightMoves(
-      startingSquareId,
-      pieceColor,
-      boardSquaresArray
-    );
-    return legalSquares;
-  }
-  if  (pieceType=="rook"){
-    legalSquares = getRookMoves(
-      startingSquareId,
-      pieceColor,
-      boardSquaresArray
-    );
-    return legalSquares;
-  }
-  if  (pieceType=="bishop") {
-    legalSquares = getBishopMoves(
-      startingSquareId,
-      pieceColor,
-      boardSquaresArray
-    );
-    return legalSquares;
-  }
-  if  (pieceType=="queen"){
-    legalSquares = getQueenMoves(
-      startingSquareId,
-      pieceColor,
-      boardSquaresArray
-    );
-    return legalSquares;
-  }
-  if  (pieceType=="king"){
-      legalSquares = getKingMoves(
-      startingSquareId,
-      pieceColor,
-      boardSquaresArray
-    );
-    return legalSquares;
-  }
+    return getMoves(startingSquareId, piece.pieceColor, boardSquaresArray);
+  
 }
 
+function getMoves (startingSquareId, pieceColor, boardSquaresArray) {
+
+}
 
 function getPawnMoves(startingSquareId, pieceColor, boardSquaresArray) {
   let diogonalSquares = checkPawnDiagonalCaptures(
@@ -703,109 +656,6 @@ function getPieceAtSquare(squareId, boardSquaresArray) {
   return { pieceColor: color, pieceType: pieceType,pieceId:pieceId};
 }
 
-function isKingInCheck(SquareId, pieceColor, boardSquaresArray) {
-  let legalSquares = getRookMoves(SquareId, pieceColor, boardSquaresArray);
-  for (let squareId of legalSquares) {
-    let pieceProperties = getPieceAtSquare(squareId, boardSquaresArray);
-    if (
-      (pieceProperties.pieceType == "rook" ||
-        pieceProperties.pieceType == "queen") &&
-      pieceColor != pieceProperties.color
-    ) {
-      return true;
-    }
-  }
-
-  legalSquares = getBishopMoves(SquareId, pieceColor, boardSquaresArray);
-  for (let squareId of legalSquares) {
-    let pieceProperties = getPieceAtSquare(squareId, boardSquaresArray);
-    if (
-      (pieceProperties.pieceType == "bishop" ||
-        pieceProperties.pieceType == "queen") &&
-      pieceColor != pieceProperties.color
-    ) {
-      return true;
-    }
-  }
-
-  legalSquares = getKnightMoves(SquareId, pieceColor, boardSquaresArray);
-  for (let squareId of legalSquares) {
-    let pieceProperties = getPieceAtSquare(squareId, boardSquaresArray);
-    if (
-      pieceProperties.pieceType == "knight" &&
-      pieceColor != pieceProperties.color
-    ) {
-      return true;
-    }
-  }
-
-  legalSquares = checkPawnDiagonalCaptures(
-    SquareId,
-    pieceColor,
-    boardSquaresArray
-  );
-  for (let squareId of legalSquares) {
-    let pieceProperties = getPieceAtSquare(squareId, boardSquaresArray);
-    if (
-      pieceProperties.pieceType == "pawn" &&
-      pieceColor != pieceProperties.color
-    ) {
-      return true;
-    }
-  }
-  legalSquares = getKingMoves(SquareId, pieceColor, boardSquaresArray);
-  for (let squareId of legalSquares) {
-    let pieceProperties = getPieceAtSquare(squareId, boardSquaresArray);
-    if (
-      pieceProperties.pieceType == "king" &&
-      pieceColor != pieceProperties.color
-    ) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function isMoveValidAgainstCheck(legalSquares,startingSquareId,pieceColor,pieceType){
-  let kingSquare = isWhiteTurn  ? whiteKingSquare : blackKingSquare;
-  let boardSquaresArrayCopy = deepCopyArray(boardSquaresArray);
-  legalSquaresCopy =legalSquares.slice();
-  legalSquaresCopy.forEach((element) => {
-    let destinationId = element;
-    //boardSquaresArrayCopy.length=0;
-    boardSquaresArrayCopy = deepCopyArray(boardSquaresArray);
-    updateBoardSquaresArray(
-      startingSquareId,
-      destinationId,
-      boardSquaresArrayCopy
-    );
-
-    if (pieceType != "king" && isKingInCheck(kingSquare, pieceColor, boardSquaresArrayCopy)) {
-      legalSquares = legalSquares.filter((item) => item !== destinationId);
-    }
-
-    if (pieceType == "king" && isKingInCheck(destinationId, pieceColor, boardSquaresArrayCopy)) {
-      legalSquares = legalSquares.filter((item) => item !== destinationId);
-    }
-
-  });
-  return legalSquares;
-}
-
-function checkForCheckMate() {
-  let kingSqaure=isWhiteTurn  ? whiteKingSquare: blackKingSquare;
-  let pieceColor=isWhiteTurn  ? "white": "black";
-  let boardSquaresArrayCopy = deepCopyArray(boardSquaresArray);
-  let kingIsCheck=isKingInCheck(kingSqaure,pieceColor,boardSquaresArrayCopy);
-
-  if(!kingIsCheck) return;
-  let possibleMoves=getAllPossibleMoves(boardSquaresArrayCopy,pieceColor);
-  if(possibleMoves.length>0) return;
-  let message="";
-  isWhiteTurn  ? (message="Black Wins") : (message="White Wins");
-  showAlert(message);
-}
-
 function getAllPossibleMoves(squaresArray, color) {
   return squaresArray
     .filter((square) => square.pieceColor === color)
@@ -833,13 +683,25 @@ function getAllPossibleMoves(squaresArray, color) {
     });
 }
 
-
 function showAlert(message) {
   const alert= document.getElementById("alert");
   alert.innerHTML=message;
   alert.style.display="block";
 
-  setTimeout(function(){
+  setTimeout(function() {
        alert.style.display="none";
   },3000);
+}
+
+function showTurn() {
+    switch(whoseTurn){
+        case 0: showAlert("Red Turn");
+        break;
+        case 1: showAlert("Yellow Turn");
+        break;
+        case 2: showAlert("Green Turn");
+        break; 
+        default: showAlert("Blue Turn");
+        break;
+    }
 }
