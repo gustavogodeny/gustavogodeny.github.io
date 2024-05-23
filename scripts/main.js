@@ -1,26 +1,39 @@
 let boardSquaresArray = [];
-let whoseTurn = 0;  // 0: red; 1: yellow; 2: green; 3: blue
+let whoseTurn = -1;  // 0: red; 1: yellow; 2: green; 3: blue
 
 const boardSquares = document.getElementsByClassName("square");
 const pieces = document.getElementsByClassName("piece");
 const piecesImages = document.getElementsByTagName("img");
 
+const players = {
+    red: {monsters: 0, werewolf: 0, vampire: 0, ghost: 0},
+    yellow: {monsters: 0, werewolf: 0, vampire: 0, ghost: 0},
+    green: {monsters: 0, werewolf: 0, vampire: 0, ghost: 0},
+    blue: {monsters: 0, werewolf: 0, vampire: 0, ghost: 0},
+}
+
 let btnLogin = document.getElementById("btn-login");
 let btnStart = document.getElementById("btn-start");
+
 let turn = document.getElementById("turn");
+let redPlayer = document.getElementById("redPlayer");
+let yellowPlayer = document.getElementById("yellowPlayer");
+let greenPlayer = document.getElementById("greenPlayer");
+let bluePlayer = document.getElementById("bluePlayer");
 
 let myUser = document.getElementById("userId");
 
 function login() {
-  do{
-      var name = prompt("Enter your name");
-  } while (name === '');
+    let user;
+    do{
+        user = prompt("Enter your username");
+    } while (user === '');
 
-  if (name) {     //Else the user pressed Cancel
-      localStorage.setItem("name", name);
-      myUser.textContent = `logged as ${name}`;
-      btnLogin.textContent = "Logout";
-  }
+    if (user) {     //Else the user pressed Cancel
+        localStorage.setItem("name", user);
+        myUser.textContent = `logged as ${user}`;
+        btnLogin.textContent = "Logout";
+    }
 }
 
 function logout() {
@@ -37,7 +50,75 @@ btnLogin.onclick = () => {
 }
 
 btnStart.onclick = () => {
-    turn.textContent = `${showTurn()}'s turn, ${boardSquaresArray.length}`;
+    if (btnStart.textContent == "Start Game") {
+        whoseTurn = parseInt(Math.random() * 4);
+        countMonsters();
+        updateGame();
+        btnStart.textContent = "End Game";
+    }
+
+    else location.reload();
+}
+
+function updateTurn() {
+    turn.textContent = `${showTurn()}'s turn`;
+}
+
+function countMonsters() {
+    const boardSquares = document.getElementsByClassName("square");
+
+    for (let i = 0; i < boardSquares.length; i++) {
+        let square = boardSquares[i];
+
+        if (square.querySelector(".piece")) {
+            let color = square.querySelector(".piece").getAttribute("color")       
+            if      (color == "red") {
+                players.red.monsters++;
+                if      ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.red.werewolf++;
+                else if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.red.vampire++;
+                else if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.red.ghost++;
+            }
+            if      (color == "yellow") {
+                players.yellow.monsters++;
+                if ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.yellow.werewolf++;
+                if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.yellow.vampire++;
+                if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.yellow.ghost++;
+            }
+            if      (color == "green") {
+                players.green.monsters++;
+                if      ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.green.werewolf++;
+                else if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.green.vampire++;
+                else if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.green.ghost++;
+            }
+            if      (color == "blue") {
+                players.blue.monsters++;
+                if      ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.blue.werewolf++;
+                else if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.blue.vampire++;
+                else if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.blue.ghost++;
+            }
+        } 
+    }
+}
+
+function updateGame(){
+
+    if (players.red.monsters)
+        redPlayer.textContent = `Werewolves: ${players.red.werewolf}, Vampires: ${players.red.vampire}, Ghosts: ${players.red.ghost}`;
+    else redPlayer.textContent = "Game over";
+
+    if (players.yellow.monsters)
+        yellowPlayer.textContent = `Werewolves: ${players.yellow.werewolf}, Vampires: ${players.yellow.vampire}, Ghosts: ${players.yellow.ghost}`;
+    else yellowPlayer.textContent = "Game over";
+
+    if (players.green.monsters)
+        greenPlayer.textContent = `Werewolves: ${players.green.werewolf}, Vampires: ${players.green.vampire}, Ghosts: ${players.green.ghost}`;
+    else greenPlayer.textContent = "Game over";
+
+    if (players.blue.monsters)
+        bluePlayer.textContent = `Werewolves: ${players.blue.werewolf}, Vampires: ${players.blue.vampire}, Ghosts: ${players.blue.ghost}`;
+    else bluePlayer.textContent = "Game over";
+
+    updateTurn();
 }
 
 function fillBoardSquaresArray() {
@@ -46,6 +127,7 @@ function fillBoardSquaresArray() {
     let row = 8 - Math.floor(i / 8);
     let column = String.fromCharCode(97 + (i % 8));
     let square = boardSquares[i];
+
     square.id = column + row;
     let color = "";
     let pieceType = "";
@@ -122,7 +204,7 @@ function allowDrop(ev) {
 }
 function drag(ev) {
   const piece = ev.target;
-  // alert(`${piece.id} ${piece.getAttribute("class")} ${piece.getAttribute("color")}`);
+  //alert(piece.id);
   const pieceColor = piece.getAttribute("color");
   const pieceType =piece.classList[1];
   const pieceId = piece.id;
@@ -135,13 +217,12 @@ function drag(ev) {
   ) {
     const startingSquareId = piece.parentNode.id;
     ev.dataTransfer.setData("text", pieceId + "|" + startingSquareId);
-    const pieceObject ={pieceColor:pieceColor,pieceType:pieceType,pieceId:pieceId}
+    const pieceObject ={pieceColor:pieceColor, pieceType:pieceType, pieceId:pieceId}
     let legalSquares = getPossibleMoves(
       startingSquareId,
       pieceObject,
       boardSquaresArray
     );
-    alert(legalSquares.length);
 
     let legalSquaresJson = JSON.stringify(legalSquares);
     ev.dataTransfer.setData("application/json", legalSquaresJson);
@@ -155,60 +236,58 @@ function drop(ev) {
   let [pieceId, startingSquareId] = data.split("|");
   // let legalSquaresJson = ev.dataTransfer.getData("application/json");
   // let legalSquares = JSON.parse(legalSquaresJson);
-  // alert(pieceId);
+
   const piece = document.getElementById(pieceId);
   const pieceColor = piece.getAttribute("color");
   const pieceType = piece.classList[1];
-  // alert(piece.classList[1]);
+
   const destinationSquare = ev.currentTarget;
   let   destinationSquareId = destinationSquare.id;
 
-  legalSquares=isMoveValidAgainstCheck(legalSquares,startingSquareId,pieceColor,pieceType);
-
-
+  //legalSquares=isMoveValidAgainstCheck(legalSquares,startingSquareId,pieceColor,pieceType);
 
     let squareContent=getPieceAtSquare(destinationSquareId,boardSquaresArray);
 
+    //if (!legalSquares.includes(destinationSquareId)) {
+    //    return;
+    //}
+    alert(JSON.stringify(squareContent));
+    if (squareContent.pieceType != "blank") {
+        players[squareContent.pieceColor]["monsters"]--;
+        players[squareContent.pieceColor][squareContent.pieceType]--;
+    }
 
-    alert(`${squareContent} ${legalSquares}`);
-
-  if (
-     squareContent.pieceColor == "blank"
-    //  legalSquares.includes(destinationSquareId)
-  ) {
-    destinationSquare.appendChild(piece);
-    whoseTurn = (whoseTurn + 1) % 4;
-    updateBoardSquaresArray(
-      startingSquareId,
-      destinationSquareId,
-      boardSquaresArray
-    );
-    checkForEndGame();
-    return;
-  }
-  if (
-     squareContent.pieceColor!= "blank" &&
-     legalSquares.includes(destinationSquareId)
-  ) {
+    if (squareContent.pieceColor != "blank") {
     let children = destinationSquare.children;
+    
     for (let i = 0; i < children.length; i++) {
         if (!children[i].classList.contains('coordinate')) {
           destinationSquare.removeChild(children[i]);
         }
     }
-    // while (destinationSquare.firstChild) {
-    //   destinationSquare.removeChild(destinationSquare.firstChild);
-    // }
-    destinationSquare.appendChild(piece);
-    whoseTurn = (whoseTurn + 1) % 4;
-    updateBoardSquaresArray(
-      startingSquareId,
-      destinationSquareId,
-      boardSquaresArray
-    );
-    checkForEndGame();
-    return;
+
   }
+
+  destinationSquare.appendChild(piece);
+
+  let rand;
+  do {
+    rand = parseInt(Math.random() * 4);
+  } while (rand == whoseTurn);
+  
+  whoseTurn = rand;
+  
+  updateBoardSquaresArray(
+    startingSquareId,
+    destinationSquareId,
+    boardSquaresArray
+  );
+  //checkForEndGame();
+
+  updateGame();
+  
+  return;
+
 }
 
 function getPossibleMoves(startingSquareId, piece, boardSquaresArray) {
@@ -706,7 +785,9 @@ function showTurn() {
         break;
         case 2: message = "green";
         break;
-        default: message = "blue";
+        case 3: message = "blue";
+        break;
+        default: message = "invalid";
         break;
     }
     return message;
