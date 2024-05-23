@@ -7,6 +7,7 @@ const piecesImages = document.getElementsByTagName("img");
 
 let btnLogin = document.getElementById("btn-login");
 let btnStart = document.getElementById("btn-start");
+let turn = document.getElementById("turn");
 
 let myUser = document.getElementById("userId");
 
@@ -36,13 +37,7 @@ btnLogin.onclick = () => {
 }
 
 btnStart.onclick = () => {
-    const alert= document.getElementById("alert");
-    alert.innerHTML="Game started";
-    alert.style.display="block";
-  
-    setTimeout(function() {
-         alert.style.display="none";
-    },3000);
+    turn.textContent = `${showTurn()}'s turn, ${boardSquaresArray.length}`;
 }
 
 function fillBoardSquaresArray() {
@@ -116,8 +111,7 @@ function setupPieces() {
   for (let i = 0; i < pieces.length; i++) {
     pieces[i].addEventListener("dragstart", drag);
     pieces[i].setAttribute("draggable", true);
-    pieces[i].id =
-      pieces[i].className.split(" ")[1] + pieces[i].parentElement.id;
+    pieces[i].id = pieces[i].className.split(" ")[1] + pieces[i].parentElement.id;
   }
   for (let i = 0; i < piecesImages.length; i++) {
     piecesImages[i].setAttribute("draggable", false);
@@ -128,13 +122,16 @@ function allowDrop(ev) {
 }
 function drag(ev) {
   const piece = ev.target;
+  // alert(`${piece.id} ${piece.getAttribute("class")} ${piece.getAttribute("color")}`);
   const pieceColor = piece.getAttribute("color");
   const pieceType =piece.classList[1];
   const pieceId = piece.id;
 
   if (
-    (whoseTurn && pieceColor == "white") ||
-    (!whoseTurn && pieceColor == "black")
+    (whoseTurn == 0 && pieceColor == "red") ||
+    (whoseTurn == 1 && pieceColor == "yellow") ||
+    (whoseTurn == 2 && pieceColor == "green") ||
+    (whoseTurn == 3 && pieceColor == "blue")
   ) {
     const startingSquareId = piece.parentNode.id;
     ev.dataTransfer.setData("text", pieceId + "|" + startingSquareId);
@@ -144,22 +141,25 @@ function drag(ev) {
       pieceObject,
       boardSquaresArray
     );
+    alert(legalSquares.length);
 
     let legalSquaresJson = JSON.stringify(legalSquares);
     ev.dataTransfer.setData("application/json", legalSquaresJson);
   }
 }
+
 function drop(ev) {
   ev.preventDefault();
   let data = ev.dataTransfer.getData("text");
+  // alert(`[${data}]`);
   let [pieceId, startingSquareId] = data.split("|");
-  let legalSquaresJson = ev.dataTransfer.getData("application/json");
-  let legalSquares = JSON.parse(legalSquaresJson);
-
+  // let legalSquaresJson = ev.dataTransfer.getData("application/json");
+  // let legalSquares = JSON.parse(legalSquaresJson);
+  // alert(pieceId);
   const piece = document.getElementById(pieceId);
   const pieceColor = piece.getAttribute("color");
   const pieceType = piece.classList[1];
-
+  // alert(piece.classList[1]);
   const destinationSquare = ev.currentTarget;
   let   destinationSquareId = destinationSquare.id;
 
@@ -168,9 +168,13 @@ function drop(ev) {
 
 
     let squareContent=getPieceAtSquare(destinationSquareId,boardSquaresArray);
+
+
+    alert(`${squareContent} ${legalSquares}`);
+
   if (
-     squareContent.pieceColor == "blank" &&
-     legalSquares.includes(destinationSquareId)
+     squareContent.pieceColor == "blank"
+    //  legalSquares.includes(destinationSquareId)
   ) {
     destinationSquare.appendChild(piece);
     whoseTurn = (whoseTurn + 1) % 4;
@@ -179,7 +183,7 @@ function drop(ev) {
       destinationSquareId,
       boardSquaresArray
     );
-    checkForCheckMate();
+    checkForEndGame();
     return;
   }
   if (
@@ -202,7 +206,7 @@ function drop(ev) {
       destinationSquareId,
       boardSquaresArray
     );
-    checkForCheckMate();
+    checkForEndGame();
     return;
   }
 }
@@ -210,11 +214,11 @@ function drop(ev) {
 function getPossibleMoves(startingSquareId, piece, boardSquaresArray) {
 
     return getMoves(startingSquareId, piece.pieceColor, boardSquaresArray);
-  
+
 }
 
 function getMoves (startingSquareId, pieceColor, boardSquaresArray) {
-
+  return 1;
 }
 
 function getPawnMoves(startingSquareId, pieceColor, boardSquaresArray) {
@@ -694,14 +698,16 @@ function showAlert(message) {
 }
 
 function showTurn() {
+  let message;
     switch(whoseTurn){
-        case 0: showAlert("Red Turn");
+        case 0: message = "red";
         break;
-        case 1: showAlert("Yellow Turn");
+        case 1: message = "yellow";
         break;
-        case 2: showAlert("Green Turn");
-        break; 
-        default: showAlert("Blue Turn");
+        case 2: message = "green";
+        break;
+        default: message = "blue";
         break;
     }
+    return message;
 }
