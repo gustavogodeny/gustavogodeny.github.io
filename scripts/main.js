@@ -124,8 +124,8 @@ function updateGame(){
 function fillBoardSquaresArray() {
   const boardSquares = document.getElementsByClassName("square");
   for (let i = 0; i < boardSquares.length; i++) {
-    let row = 8 - Math.floor(i / 8);
-    let column = String.fromCharCode(97 + (i % 8));
+    let row = 11 - Math.floor(i / 12);
+    let column = String.fromCharCode(96 + (i % 12));
     let square = boardSquares[i];
 
     square.id = column + row;
@@ -133,9 +133,9 @@ function fillBoardSquaresArray() {
     let pieceType = "";
     let pieceId="";
     if (square.querySelector(".piece")) {
-      color = square.querySelector(".piece").getAttribute("color");
+      color     = square.querySelector(".piece").getAttribute("color");
       pieceType = square.querySelector(".piece").classList[1];
-      pieceId=square.querySelector(".piece").id;
+      pieceId   = square.querySelector(".piece").id;
     } else {
       color = "blank";
       pieceType = "blank";
@@ -145,7 +145,7 @@ function fillBoardSquaresArray() {
       squareId: square.id,
       pieceColor: color,
       pieceType: pieceType,
-      pieceId:pieceId
+      pieceId: pieceId
     };
     boardSquaresArray.push(arrayElement);
   }
@@ -180,11 +180,12 @@ setupPieces();
 fillBoardSquaresArray();
 
 function setupBoardSquares() {
+    alert(boardSquares.length)
   for (let i = 0; i < boardSquares.length; i++) {
     boardSquares[i].addEventListener("dragover", allowDrop);
     boardSquares[i].addEventListener("drop", drop);
-    let row = 8 - Math.floor(i / 8);
-    let column = String.fromCharCode(97 + (i % 8));
+    let row = 11 - Math.floor(i / 12);
+    let column = String.fromCharCode(96 + (i % 12));
     let square = boardSquares[i];
     square.id = column + row;
   }
@@ -204,7 +205,10 @@ function allowDrop(ev) {
 }
 function drag(ev) {
   const piece = ev.target;
-  //alert(piece.id);
+
+  const www = piece.parentNode.id;
+  alert(JSON.stringify(www));
+  
   const pieceColor = piece.getAttribute("color");
   const pieceType =piece.classList[1];
   const pieceId = piece.id;
@@ -244,14 +248,8 @@ function drop(ev) {
   const destinationSquare = ev.currentTarget;
   let   destinationSquareId = destinationSquare.id;
 
-  //legalSquares=isMoveValidAgainstCheck(legalSquares,startingSquareId,pieceColor,pieceType);
-
     let squareContent=getPieceAtSquare(destinationSquareId,boardSquaresArray);
 
-    //if (!legalSquares.includes(destinationSquareId)) {
-    //    return;
-    //}
-    alert(JSON.stringify(squareContent));
     if (squareContent.pieceType != "blank") {
         players[squareContent.pieceColor]["monsters"]--;
         players[squareContent.pieceColor][squareContent.pieceType]--;
@@ -292,7 +290,7 @@ function drop(ev) {
 
 function getPossibleMoves(startingSquareId, piece, boardSquaresArray) {
 
-    return getMoves(startingSquareId, piece.pieceColor, boardSquaresArray);
+    return getRookMoves(startingSquareId, piece.pieceColor, boardSquaresArray);
 
 }
 
@@ -490,48 +488,6 @@ function getQueenMoves(startingSquareId, pieceColor, boardSquaresArray) {
   return legalSquares;
 }
 
-function getKingMoves(startingSquareId, pieceColor, boardSquaresArray) {
-  const file = startingSquareId.charCodeAt(0) - 97;
-  const rank = startingSquareId.charAt(1);
-  const rankNumber = parseInt(rank);
-  let currentFile = file;
-  let currentRank = rankNumber;
-  let legalSquares = [];
-
-  const moves = [
-    [0, 1],
-    [0, -1],
-    [1, 1],
-    [1, -1],
-    [-1, 0],
-    [-1, -1],
-    [-1, 1],
-    [1, 0],
-  ];
-
-  //  for (let move of moves)
-  moves.forEach((move) => {
-    currentFile = file + move[0];
-    currentRank = rankNumber + move[1];
-    if (
-      currentFile >= 0 &&
-      currentFile <= 7 &&
-      currentRank > 0 &&
-      currentRank <= 8
-    ) {
-      let currentSquareId = String.fromCharCode(currentFile + 97) + currentRank;
-      let currentSquare = boardSquaresArray.find(
-        (element) => element.squareId === currentSquareId
-      );
-      let squareContent = currentSquare.pieceColor;
-      if (squareContent != "blank" && squareContent == pieceColor)
-        return legalSquares;
-      legalSquares.push(String.fromCharCode(currentFile + 97) + currentRank);
-    }
-  });
-  return legalSquares;
-}
-
 function moveToEighthRank(startingSquareId, pieceColor, boardSquaresArray) {
   const file = startingSquareId.charAt(0);
   const rank = startingSquareId.charAt(1);
@@ -553,6 +509,7 @@ function moveToEighthRank(startingSquareId, pieceColor, boardSquaresArray) {
   }
   return legalSquares;
 }
+
 function moveToFirstRank(startingSquareId, pieceColor, boardSquaresArray) {
   const file = startingSquareId.charAt(0);
   const rank = startingSquareId.charAt(1);
@@ -574,6 +531,7 @@ function moveToFirstRank(startingSquareId, pieceColor, boardSquaresArray) {
   }
   return legalSquares;
 }
+
 function moveToAFile(startingSquareId, pieceColor, boardSquaresArray) {
   const file = startingSquareId.charAt(0);
   const rank = startingSquareId.charAt(1);
@@ -597,6 +555,7 @@ function moveToAFile(startingSquareId, pieceColor, boardSquaresArray) {
   }
   return legalSquares;
 }
+
 function moveToHFile(startingSquareId, pieceColor, boardSquaresArray) {
   const file = startingSquareId.charAt(0);
   const rank = startingSquareId.charAt(1);
@@ -737,33 +696,6 @@ function getPieceAtSquare(squareId, boardSquaresArray) {
   const pieceType = currentSquare.pieceType;
   const pieceId=currentSquare.pieceId;
   return { pieceColor: color, pieceType: pieceType,pieceId:pieceId};
-}
-
-function getAllPossibleMoves(squaresArray, color) {
-  return squaresArray
-    .filter((square) => square.pieceColor === color)
-    .flatMap((square) => {
-      const { pieceColor,pieceType,pieceId } = getPieceAtSquare(square.squareId,squaresArray);
-      if (pieceId === "blank") return [];
-
-      //const piece = document.getElementById(pieceId);
-      let squaresArrayCopy = deepCopyArray(squaresArray);
-      const pieceObject ={pieceColor:pieceColor,pieceType:pieceType,pieceId:pieceId}
-
-      let legalSquares = getPossibleMoves(
-        square.squareId,
-        pieceObject,
-        squaresArrayCopy
-      );
-      legalSquares = isMoveValidAgainstCheck(
-        legalSquares,
-        square.squareId,
-        pieceColor,
-        pieceType
-      );
-
-      return legalSquares;
-    });
 }
 
 function showAlert(message) {
