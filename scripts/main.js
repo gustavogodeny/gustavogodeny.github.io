@@ -29,15 +29,23 @@ let userInfo = document.getElementById("userInfo");
 let userLS = {noOfLogins: 0, red: 0, yellow: 0, green: 0, blue: 0};
 
 function login() {
-  // localStorage.clear();
     let user;
+    userLS.noOfLogins = 0;
+    userLS.red = 0;
+    userLS.yellow = 0;
+    userLS.green = 0;
+    userLS.blue = 0;
+
     do{
         user = prompt("Enter your username");
     } while (user === '');
 
     if (user) {     //Else the user pressed Cancel
-        if (!localStorage.getItem(user))
+        if (!localStorage.getItem(user)){
           localStorage.setItem(user, JSON.stringify(userLS));
+          alert("if");
+        }
+
 
         userLS = JSON.parse(localStorage.getItem(user));
         userLS.noOfLogins++;
@@ -116,6 +124,10 @@ function countMonsters() {
 }
 
 function updateGame(){
+
+  // for (let i; i < 4; i++){
+  //   let color = numToText(i);
+  // }
 
     if (players.red.monsters)
         redPlayer.textContent = `Werewolves: ${players.red.werewolf},
