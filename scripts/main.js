@@ -1,3 +1,5 @@
+
+
 let boardSquaresArray = [];
 let whoseTurn = -1;  // 0: red; 1: yellow; 2: green; 3: blue
 
@@ -23,24 +25,45 @@ let greenPlayer = document.getElementById("greenPlayer");
 let bluePlayer = document.getElementById("bluePlayer");
 
 let myUser = document.getElementById("userId");
+let userInfo = document.getElementById("userInfo");
+let userLS = {noOfLogins: 0, red: 0, yellow: 0, green: 0, blue: 0};
 
 function login() {
+  // localStorage.clear();
     let user;
     do{
         user = prompt("Enter your username");
     } while (user === '');
 
     if (user) {     //Else the user pressed Cancel
-        localStorage.setItem("name", user);
-        myUser.textContent = `logged as ${user}`;
+        if (!localStorage.getItem(user))
+          localStorage.setItem(user, JSON.stringify(userLS));
+
+        userLS = JSON.parse(localStorage.getItem(user));
+        userLS.noOfLogins++;
+        localStorage.setItem(user, JSON.stringify(userLS));
+        setUserInfo();
+
         btnLogin.textContent = "Logout";
+        if(userLS.noOfLogins == 1)
+          myUser.textContent = `Logged as ${user}`;
+        else
+          myUser.textContent = `Welcome back, ${user}!`;
     }
 }
 
+function setUserInfo(){
+  userInfo.textContent = `Number of logins: ${userLS.noOfLogins}
+                          Red's victories: ${userLS.red}
+                          Yellow's victories: ${userLS.yellow}
+                          Green's victories: ${userLS.green}
+                          Blue's victories: ${userLS.blue}`
+}
+
 function logout() {
-  myUser.textContent = "please login.";
+  myUser.textContent = "Please login.";
   btnLogin.textContent = "Login";
-  alert("Logout successfull");
+  userInfo.textContent = "";
 }
 
 btnLogin.onclick = () => {
@@ -68,12 +91,6 @@ btnTurn.onclick = () => {
     rand = parseInt(Math.random() * 4);
   } while (rand == whoseTurn || players[numToText(rand)].monsters == 0);
 
-  // alert(`whoseTurn = ${whoseTurn} \nrand = ${rand}
-  // \nnumToText(whoseTurn) = ${numToText(whoseTurn)}
-  // \nnumToText(rand) = ${numToText(rand)}`);
-
-  // alert(players[numToText(rand)].monsters);
-
   whoseTurn = rand;
   updateTurn();
 }
@@ -89,31 +106,11 @@ function countMonsters() {
       let square = boardSquares[i];
 
       if (square.querySelector(".piece")) {
-        let color = square.querySelector(".piece").getAttribute("color")
-        if      (color == "red") {
-            players.red.monsters++;
-            if      ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.red.werewolf++;
-            else if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.red.vampire++;
-            else if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.red.ghost++;
-        }
-        if      (color == "yellow") {
-            players.yellow.monsters++;
-            if ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.yellow.werewolf++;
-            if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.yellow.vampire++;
-            if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.yellow.ghost++;
-        }
-        if      (color == "green") {
-            players.green.monsters++;
-            if      ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.green.werewolf++;
-            else if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.green.vampire++;
-            else if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.green.ghost++;
-        }
-        if      (color == "blue") {
-            players.blue.monsters++;
-            if      ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players.blue.werewolf++;
-            else if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players.blue.vampire++;
-            else if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players.blue.ghost++;
-        }
+        let color = square.querySelector(".piece").getAttribute("color");
+        players[color]["monsters"]++;
+        if      ((square.querySelector(".piece").getAttribute("class")).includes("werewolf")) players[color]["werewolf"]++;
+        else if ((square.querySelector(".piece").getAttribute("class")).includes("vampire")) players[color]["vampire"]++;
+        else if ((square.querySelector(".piece").getAttribute("class")).includes("ghost")) players[color]["ghost"]++;
       }
     }
 }
@@ -142,22 +139,30 @@ function updateGame(){
 
     if(players.red.monsters > 0 && players.yellow.monsters == 0 &&
       players.green.monsters == 0 && players.blue.monsters == 0) {
-        alert("Red player won!")
+        alert("Red player won!");
+        userLS.red++;
+        localStorage.setItem(user, JSON.stringify(userLS));
         logout();
     }
     else if(players.red.monsters == 0 && players.yellow.monsters > 0 &&
       players.green.monsters == 0 && players.blue.monsters == 0) {
-        alert("Yellow player won!")
+        alert("Yellow player won!");
+        userLS.yellow++;
+        localStorage.setItem(user, JSON.stringify(userLS));
         logout();
     }
     else if(players.red.monsters == 0 && players.yellow.monsters == 0 &&
       players.green.monsters > 0 && players.blue.monsters == 0) {
-        alert("Green player won!")
+        alert("Green player won!");
+        userLS.green++;
+        localStorage.setItem(user, JSON.stringify(userLS));
         logout();
     }
     else if(players.red.monsters == 0 && players.yellow.monsters == 0 &&
       players.green.monsters == 0 && players.blue.monsters > 0) {
-        alert("Blue player won!")
+        alert("Blue player won!");
+        userLS.blue++;
+        localStorage.setItem(user, JSON.stringify(userLS));
         logout();
     }
 
@@ -200,8 +205,6 @@ function updateBoardSquaresArray (currentSquareId, destinationSquareId, boardSqu
     whoLived == -1: none
     */
 
-
-
     let currentSquare = boardSquaresArray.find(
         (element) => element.squareId === currentSquareId
     );
@@ -226,13 +229,6 @@ function updateBoardSquaresArray (currentSquareId, destinationSquareId, boardSqu
     currentSquare.pieceColor = "blank";
     currentSquare.pieceType = "blank";
     currentSquare.pieceId = "blank";
-}
-
-function deepCopyArray(array) {
-  let arrayCopy = array.map(element => {
-    return {...element};
-  });
-  return arrayCopy;
 }
 
 setupBoardSquares();
@@ -270,16 +266,6 @@ function drag(ev) {
   const pieceType =piece.classList[1];
   const pieceId = piece.id;
 
-  // alert(pieceId);
-  // alert(piece.parentNode.id);
-
-  // if (
-  //   (whoseTurn == 0 && pieceColor == "red") ||
-  //   (whoseTurn == 1 && pieceColor == "yellow") ||
-  //   (whoseTurn == 2 && pieceColor == "green") ||
-  //   (whoseTurn == 3 && pieceColor == "blue")
-  // ) {
-
   if (numToText(whoseTurn) == pieceColor) {
     const startingSquareId = piece.parentNode.id;
     ev.dataTransfer.setData("text", pieceId + "|" + startingSquareId);
@@ -314,7 +300,7 @@ function drop(ev) {
   const destinationSquare = ev.currentTarget;
   let   destinationSquareId = destinationSquare.id;
 
-  let squareContent=getPieceAtSquare(destinationSquareId,boardSquaresArray);
+  let squareContent = getPieceAtSquare(destinationSquareId,boardSquaresArray);
 
   if(!legalSquares.includes(destinationSquareId)) {
     alert(`Invalid move. \nValid moves for this monster: ${legalSquares}`);
